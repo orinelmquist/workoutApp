@@ -13,25 +13,30 @@ class HistoryTableViewController: UITableViewController {
     
     let realm = try! Realm()
     var exercisesDone = [Exercise]()
+    var exerciseNames = Set<String>()
     @IBOutlet var historyTableView: UITableView!
     var selectedExercise = Exercise()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        updateData()
+    }
+    
+    func updateData() {
         let allWorkouts = try! Realm().objects(WorkoutDay.self)
         
         for workout in allWorkouts {
             for exercise in workout.workoutType!.exercises {
-                if exercise.reps.count > 0 {
+                if exercise.reps.count > 0 && !exerciseNames.contains(exercise.name) {
                     exercisesDone.append(exercise)
+                    exerciseNames.insert(exercise.name)
                 }
             }
         }
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        updateData()
         historyTableView.reloadData()
     }
     
